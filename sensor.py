@@ -1,4 +1,4 @@
-import RPi.GPIO as GPIO
+import fake_rpi as GPIO
 
 MOISTURE_SENSOR_PIN = 17  # Change to your GPIO pin
 

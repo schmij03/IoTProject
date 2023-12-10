@@ -1,4 +1,4 @@
-import RPi.GPIO as GPIO
+import fake_rpi as GPIO
 
 PUMP_RELAY_PIN = 18  # Change to your GPIO pin
 
