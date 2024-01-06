@@ -4,10 +4,10 @@ import spidev
 import time
 import RPi.GPIO as GPIO
 from pymongo import MongoClient, server_api
-from twilio.rest import Client
+import requests
 
 # GPIO setup
-pump_pin = 23  # Ersetzen Sie 17 durch die GPIO-Nummer, die Sie verwenden möchten
+pump_pin = 23  # GPIO Nummer auf dem Raspberry PI.
 GPIO.setmode(GPIO.BCM)  # oder GPIO.BOARD für physische Pin-Nummerierung
 GPIO.setup(pump_pin, GPIO.OUT)
 
@@ -46,45 +46,50 @@ sensor_channel = 0
 # Define the threshold below which "water your plant" is printed
 threshold = 200
 
-# Twilio configuration
-account_sid = 'AC0c902a5e755d62b747b0a1a0e546c64b'
-auth_token = '2f4d15a4e4179f21ee265caeb8bdf1ee'
-twilio_client = Client(account_sid, auth_token)
+# Telegram configuration
+telegram_bot_token = '6611630847:AAEyTRdb8zn_G2cHA33covbTtZ7luOE6JoA'
+chat_id = '6432517199'
 
+def send_telegram_message(message):
+    """Sendet eine Nachricht ueber den Telegram Bot."""
+    send_text = f'https://api.telegram.org/bot{telegram_bot_token}/sendMessage?chat_id={chat_id}&parse_mode=Markdown&text={message}'
+    response = requests.get(send_text)
+    return response.json()
+    
 try:
     while True:
         # Read the moisture sensor data
         moisture_level = ReadChannel(sensor_channel)
-
+        
         # Print out results
         print(f"Moisture Level: {moisture_level}")
-
+        
         # Store the value in MongoDB
         post = {"moisture_level": moisture_level, "timestamp": time.time()}
         post_id = collection.insert_one(post).inserted_id
-
+        
         # Check if moisture level is below threshold
         if moisture_level < threshold:
             print("Water your plant!")
             water_count += 1
-            GPIO.output(pump_pin, GPIO.HIGH)  # Schaltet den Transistor (und die Pumpe) ein
+            GPIO.output(pump_pin, GPIO.HIGH)  # Schaltet die Pumpe ein
+            
+            # Halte die Pumpe fuer 5 Sekunden an
+            time.sleep(5)
+            
+            GPIO.output(pump_pin, GPIO.LOW)  # Schaltet die Pumpe aus
         else:
-            GPIO.output(pump_pin, GPIO.LOW)  # Schaltet den Transistor (und die Pumpe) aus
-
+            GPIO.output(pump_pin, GPIO.LOW)  # Stellt sicher, dass die Pumpe aus ist
+        
         if water_count >= 10:
             print("Bitte Flasche fuellen!")
-            # Send message via WhatsApp
-            message = twilio_client.messages.create(
-                body="Bitte Flasche fuellen!",
-                from_='whatsapp:+14155238886',
-                to='whatsapp:+41793201100'
-            )
-            print(message.sid)  # Druckt die Nachrichten-ID
-            water_count = 0  # Zurücksetzen des Zählers nach der Aufforderung
-
+            # Send message via Telegram
+            send_telegram_message("Bitte Flasche fuellen!")
+            water_count = 0  # Zuruecksetzen des Zaehlers nach der Aufforderung
+        
         # Wait before repeating loop
         time.sleep(10)
 
 except KeyboardInterrupt:
     spi.close()
-    GPIO.cleanup()  # Setzt alle Pins zurück
+    GPIO.cleanup()  # Setzt alle Pins zurueck
