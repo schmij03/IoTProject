@@ -17,9 +17,9 @@ try:
 except Exception as e:
     print("Failed to connect to MongoDB:", e)
 
-# Define your database and collection here
-db = client["IoT"]  # Change "wateringSystem" to your actual database name
-collection = db["Cluster"]  # Change "moistureReadings" to your actual collection name
+
+db = client["IoT"]  
+collection = db["Cluster"] 
 
 # Open SPI bus
 spi = spidev.SpiDev()
