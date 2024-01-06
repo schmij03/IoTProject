@@ -10,6 +10,8 @@ pump_pin = 23  # Ersetzen Sie 17 durch die GPIO-Nummer, die Sie verwenden möcht
 GPIO.setmode(GPIO.BCM)  # oder GPIO.BOARD für physische Pin-Nummerierung
 GPIO.setup(pump_pin, GPIO.OUT)
 
+# Counter for "Water your plant!"
+water_count = 0
 
 uri = "mongodb+srv://janosi:1234@cluster.lp4msmq.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"
 
@@ -28,13 +30,13 @@ collection = db["Cluster"]
 
 # Open SPI bus
 spi = spidev.SpiDev()
-spi.open(0,0)
-spi.max_speed_hz=1000000
+spi.open(0, 0)
+spi.max_speed_hz = 1000000
 
 # Function to read SPI data from MCP3008 chip
 def ReadChannel(channel):
-    adc = spi.xfer2([1,(8+channel)<<4,0])
-    data = ((adc[1]&3) << 8) + adc[2]
+    adc = spi.xfer2([1, (8 + channel) << 4, 0])
+    data = ((adc[1] & 3) << 8) + adc[2]
     return data
 
 # Define sensor channel (e.g. 0)
@@ -47,21 +49,26 @@ try:
     while True:
         # Read the moisture sensor data
         moisture_level = ReadChannel(sensor_channel)
-        
+
         # Print out results
         print(f"Moisture Level: {moisture_level}")
-        
+
         # Store the value in MongoDB
         post = {"moisture_level": moisture_level, "timestamp": time.time()}
         post_id = collection.insert_one(post).inserted_id
-        
+
         # Check if moisture level is below threshold
         if moisture_level < threshold:
             print("Water your plant!")
+            water_count += 1
             GPIO.output(pump_pin, GPIO.HIGH)  # Schaltet den Transistor (und die Pumpe) ein
         else:
             GPIO.output(pump_pin, GPIO.LOW)  # Schaltet den Transistor (und die Pumpe) aus
-        
+
+        if water_count >= 10:
+            print("Bitte Flasche füllen!")
+            water_count = 0  # Zurücksetzen des Zählers nach der Aufforderung
+
         # Wait before repeating loop
         time.sleep(10)
 
