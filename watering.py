@@ -6,12 +6,12 @@ import RPi.GPIO as GPIO
 from pymongo import MongoClient, server_api
 
 # GPIO setup
-pump_pin = 17  # Ersetzen Sie 17 durch die GPIO-Nummer, die Sie verwenden möchten
+pump_pin = 23  # Ersetzen Sie 17 durch die GPIO-Nummer, die Sie verwenden möchten
 GPIO.setmode(GPIO.BCM)  # oder GPIO.BOARD für physische Pin-Nummerierung
 GPIO.setup(pump_pin, GPIO.OUT)
 
-# Correct your URI with appropriate username and password
-uri = "mongodb+srv://username:password@cluster.lp4msmq.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"
+
+uri = "mongodb+srv://janosi:1234@cluster.lp4msmq.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"
 
 # Create a new client and connect to the server
 client = MongoClient(uri, server_api=server_api.ServerApi('1'))
