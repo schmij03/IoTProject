@@ -72,10 +72,10 @@ try:
             GPIO.output(pump_pin, GPIO.LOW)  # Schaltet den Transistor (und die Pumpe) aus
 
         if water_count >= 10:
-            print("Bitte Flasche füllen!")
+            print("Bitte Flasche fuellen!")
             # Send message via WhatsApp
             message = twilio_client.messages.create(
-                body="Bitte Flasche füllen!",
+                body="Bitte Flasche fuellen!",
                 from_='whatsapp:+14155238886',
                 to='whatsapp:+41793201100'
             )
