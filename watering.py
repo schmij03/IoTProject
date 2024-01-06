@@ -4,6 +4,7 @@ import spidev
 import time
 import RPi.GPIO as GPIO
 from pymongo import MongoClient, server_api
+from twilio.rest import Client
 
 # GPIO setup
 pump_pin = 23  # Ersetzen Sie 17 durch die GPIO-Nummer, die Sie verwenden möchten
@@ -45,6 +46,11 @@ sensor_channel = 0
 # Define the threshold below which "water your plant" is printed
 threshold = 200
 
+# Twilio configuration
+account_sid = 'AC0c902a5e755d62b747b0a1a0e546c64b'
+auth_token = '[AuthToken]'
+twilio_client = Client(account_sid, auth_token)
+
 try:
     while True:
         # Read the moisture sensor data
@@ -67,6 +73,13 @@ try:
 
         if water_count >= 10:
             print("Bitte Flasche füllen!")
+            # Send message via WhatsApp
+            message = twilio_client.messages.create(
+                body="Bitte Flasche füllen!",
+                from_='whatsapp:+14155238886',
+                to='whatsapp:+41793201100'
+            )
+            print(message.sid)  # Druckt die Nachrichten-ID
             water_count = 0  # Zurücksetzen des Zählers nach der Aufforderung
 
         # Wait before repeating loop
