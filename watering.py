@@ -48,7 +48,7 @@ threshold = 200
 
 # Twilio configuration
 account_sid = 'AC0c902a5e755d62b747b0a1a0e546c64b'
-auth_token = '[AuthToken]'
+auth_token = '2f4d15a4e4179f21ee265caeb8bdf1ee'
 twilio_client = Client(account_sid, auth_token)
 
 try:
