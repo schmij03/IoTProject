@@ -2,10 +2,16 @@
 
 import spidev
 import time
+import RPi.GPIO as GPIO
 from pymongo import MongoClient, server_api
 
+# GPIO setup
+pump_pin = 17  # Ersetzen Sie 17 durch die GPIO-Nummer, die Sie verwenden möchten
+GPIO.setmode(GPIO.BCM)  # oder GPIO.BOARD für physische Pin-Nummerierung
+GPIO.setup(pump_pin, GPIO.OUT)
+
 # Correct your URI with appropriate username and password
-uri = "mongodb+srv://janosi:1234@cluster.lp4msmq.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"
+uri = "mongodb+srv://username:password@cluster.lp4msmq.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"
 
 # Create a new client and connect to the server
 client = MongoClient(uri, server_api=server_api.ServerApi('1'))
@@ -17,9 +23,8 @@ try:
 except Exception as e:
     print("Failed to connect to MongoDB:", e)
 
-
-db = client["IoT"]  
-collection = db["Cluster"] 
+db = client["IoT"]
+collection = db["Cluster"]
 
 # Open SPI bus
 spi = spidev.SpiDev()
@@ -53,11 +58,13 @@ try:
         # Check if moisture level is below threshold
         if moisture_level < threshold:
             print("Water your plant!")
+            GPIO.output(pump_pin, GPIO.HIGH)  # Schaltet den Transistor (und die Pumpe) ein
+        else:
+            GPIO.output(pump_pin, GPIO.LOW)  # Schaltet den Transistor (und die Pumpe) aus
         
         # Wait before repeating loop
         time.sleep(10)
 
 except KeyboardInterrupt:
     spi.close()
-
-
+    GPIO.cleanup()  # Setzt alle Pins zurück
