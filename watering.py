@@ -44,7 +44,7 @@ def ReadChannel(channel):
 sensor_channel = 0
 
 # Define the threshold below which "water your plant" is printed
-threshold = 200
+threshold = 550
 
 # Telegram configuration
 telegram_bot_token = '6611630847:AAEyTRdb8zn_G2cHA33covbTtZ7luOE6JoA'
