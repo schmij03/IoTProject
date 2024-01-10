@@ -58,7 +58,7 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 logger = logging.getLogger(__name__)
 
 def send_telegram_message(message):
-    """Sendet eine Nachricht ueber den Telegram Bot."""
+    """Sendet eine Nachricht via Telegram Bot."""
     send_text = f'https://api.telegram.org/bot{telegram_bot_token}/sendMessage?chat_id={chat_id}&parse_mode=Markdown&text={message}'
     response = requests.get(send_text)
     return response.json()
