@@ -114,7 +114,7 @@ try:
             send_telegram_message("Bitte Flasche fuellen!")
             water_count = 0  # Reset counter after prompt
 
-        time.sleep(10)
+        time.sleep(7200)
 
 except KeyboardInterrupt:
     spi.close()
