@@ -37,7 +37,7 @@ except Exception as e:
 db = client["IoT"]
 db1 = client1["Project 0"]
 collection = db["Cluster"]
-collection1 = db1["Cluster"]
+collection1 = db1["Cluster0"]
 
 # Open SPI bus
 spi = spidev.SpiDev()
