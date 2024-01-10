@@ -35,7 +35,7 @@ except Exception as e:
 
 # Database and Collection setup
 db = client["IoT"]
-db1 = client1["Project 0"]
+db1 = client1["IoT2"]
 collection = db["Cluster"]
 collection1 = db1["Cluster0"]
 
