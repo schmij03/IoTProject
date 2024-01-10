@@ -5,7 +5,6 @@ import time
 import RPi.GPIO as GPIO
 from pymongo import MongoClient, server_api
 import requests
-from telegram import Update
 from telegram.ext import Updater, CommandHandler, MessageHandler, CallbackContext
 import logging
 
