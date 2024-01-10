@@ -123,6 +123,3 @@ def main() -> None:
     except KeyboardInterrupt:
         spi.close()
         GPIO.cleanup()  # Setzt alle Pins zurueck
-
-if __name__ == '__main__':
-    main()
