@@ -68,7 +68,7 @@ def start(update: Update, context: CallbackContext) -> None:
     update.message.reply_text('Hallo! Ich werde dich informieren, wenn ich die Pflanze giesse.')
 
 def giessen_command(update: Update, context: CallbackContext) -> None:
-    """Manuelles Gießen über den Telegram-Befehl"""
+    """Manuelles Giessen über den Telegram-Befehl"""
     update.message.reply_text('Pflanze wird gegossen!')
     giesse_pflanze()
     update.message.reply_text('Giessen abgeschlossen!')
@@ -82,7 +82,7 @@ def giesse_pflanze():
     print('Giessen abgeschlossen!')
 
 def main() -> None:
-    # Erstellt den Updater und übergibt ihn Ihr Bot-Token.
+    # Erstellt den Updater und uebergibt ihn Ihr Bot-Token.
     updater = Updater(telegram_bot_token)
 
     # Erhalten den Dispatcher, um handlers zu registrieren
