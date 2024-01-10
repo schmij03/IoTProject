@@ -71,6 +71,8 @@ try:
         # Check if moisture level is below threshold
         if moisture_level < threshold:
             print("Water your plant!")
+            # Send message via Telegram
+            send_telegram_message("Bitte Flasche fuellen!")
             water_count += 1
             GPIO.output(pump_pin, GPIO.HIGH)  # Schaltet die Pumpe ein
             
