@@ -5,7 +5,6 @@ import time
 import RPi.GPIO as GPIO
 from pymongo import MongoClient, server_api
 import requests
-from telegram.ext import Updater, CommandHandler, MessageHandler, CallbackContext
 import logging
 
 # GPIO setup
@@ -53,7 +52,7 @@ def ReadChannel(channel):
 sensor_channel = 0
 
 # Define the threshold below which "water your plant" is printed
-threshold = 550
+threshold = 600
 
 # Telegram configuration
 telegram_bot_token = '6611630847:AAEyTRdb8zn_G2cHA33covbTtZ7luOE6JoA'
@@ -69,7 +68,7 @@ def send_telegram_message(message):
     response = requests.get(send_text)
     return response.json()
 
-def giesse_pflanze(update: Update, context: CallbackContext):
+def giesse_pflanze():
     """Aktiviert die Pumpe fuer eine festgelegte Zeit"""
     print('Pflanze wird gegossen!')
     GPIO.output(pump_pin, GPIO.HIGH)  # Schaltet die Pumpe ein
@@ -77,14 +76,6 @@ def giesse_pflanze(update: Update, context: CallbackContext):
     GPIO.output(pump_pin, GPIO.LOW)  # Schaltet die Pumpe aus
     print('Giessen abgeschlossen!')
     update.message.reply_text('Pflanze wurde gegossen!')
-
-# Function to handle received messages
-def message_received(update: Update, context: CallbackContext) -> None:
-    # Extract the text of the received message
-    message_text = update.message.text
-
-    if "giessen" in message_text:
-        giesse_pflanze(update, context)
 
 # Main loop for monitoring moisture sensor and automatic watering
 try:
