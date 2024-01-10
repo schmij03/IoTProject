@@ -65,7 +65,7 @@ def send_telegram_message(message):
 
 # Command handler functions
 def start(update: Update, context: CallbackContext) -> None:
-    update.message.reply_text('Hallo! Ich werde dich informieren, wenn ich die Pflanze gieße.')
+    update.message.reply_text('Hallo! Ich werde dich informieren, wenn ich die Pflanze giesse.')
 
 def giessen_command(update: Update, context: CallbackContext) -> None:
     """Manuelles Gießen über den Telegram-Befehl"""
