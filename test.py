@@ -90,7 +90,7 @@ def message_received(update: Update, context: CallbackContext) -> None:
         giesse_pflanze(update, context)
 
 # Telegram Bot Initialisierung
-updater = Updater(telegram_bot_token, use_context=True)
+updater = Updater(telegram_bot_token)
 
 # Erstellen eines Dispatchers
 dp = updater.dispatcher
