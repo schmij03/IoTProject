@@ -6,7 +6,7 @@ import RPi.GPIO as GPIO
 from pymongo import MongoClient, server_api
 import requests
 from telegram import Update
-from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext
+from telegram.ext import Updater, CommandHandler, MessageHandler, CallbackContext
 import logging
 
 # GPIO setup
@@ -58,7 +58,7 @@ threshold = 550
 
 # Telegram configuration
 telegram_bot_token = '6611630847:AAEyTRdb8zn_G2cHA33covbTtZ7luOE6JoA'
-chat_id = '6432517199
+chat_id = '6432517199'
 
 # Logging configuration (optional)
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
