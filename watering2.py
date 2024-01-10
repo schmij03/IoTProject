@@ -81,45 +81,44 @@ def giesse_pflanze():
     GPIO.output(pump_pin, GPIO.LOW)  # Schaltet die Pumpe aus
     print('Giessen abgeschlossen!')
 
-def main() -> None:
-    # Erstellt den Updater und uebergibt ihn Ihr Bot-Token.
-    updater = Updater(telegram_bot_token)
+# Erstellt den Updater und uebergibt ihn Ihr Bot-Token.
+updater = Updater(telegram_bot_token)
 
-    # Erhalten den Dispatcher, um handlers zu registrieren
-    dp = updater.dispatcher
+# Erhalten den Dispatcher, um handlers zu registrieren
+dp = updater.dispatcher
 
-    # Verschiedene command handlers
-    dp.add_handler(CommandHandler("start", start))
-    dp.add_handler(CommandHandler("giessen", giessen_command))  # Fuegt einen Handler fuer /giessen hinzu
+# Verschiedene command handlers
+dp.add_handler(CommandHandler("start", start))
+dp.add_handler(CommandHandler("giessen", giessen_command))  # Fuegt einen Handler fuer /giessen hinzu
 
-    # Startet den Bot
-    updater.start_polling()
+# Startet den Bot
+updater.start_polling()
 
-    # ueberwachen des Feuchtigkeitssensors und automatisches Gießen, wenn erforderlich
-    try:
-        while True:
-            # Feuchtigkeit lesen
-            moisture_level = ReadChannel(sensor_channel)
-            print(f"Aktuelles Feuchtigkeitsniveau: {moisture_level}")
+# ueberwachen des Feuchtigkeitssensors und automatisches Gießen, wenn erforderlich
+try:
+    while True:
+        # Feuchtigkeit lesen
+        moisture_level = ReadChannel(sensor_channel)
+        print(f"Aktuelles Feuchtigkeitsniveau: {moisture_level}")
 
-            # ueberpruefen, ob das Feuchtigkeitsniveau unter dem Schwellenwert liegt
-            if moisture_level < threshold:
-                print("Feuchtigkeit unter Schwellenwert, Pflanze wird automatisch gegossen.")
-                giesse_pflanze()
+        # ueberpruefen, ob das Feuchtigkeitsniveau unter dem Schwellenwert liegt
+        if moisture_level < threshold:
+            print("Feuchtigkeit unter Schwellenwert, Pflanze wird automatisch gegossen.")
+            giesse_pflanze()
 
-            # Store the value in MongoDB
-            post = {"moisture_level": moisture_level, "timestamp": time.time()}
-            post_id = collection.insert_one(post).inserted_id
+        # Store the value in MongoDB
+        post = {"moisture_level": moisture_level, "timestamp": time.time()}
+        post_id = collection.insert_one(post).inserted_id
 
-            if water_count >= 10:
-                print("Bitte Flasche fuellen!")
-                # Send message via Telegram
-                send_telegram_message("Bitte Flasche fuellen!")
-                water_count = 0  # Zuruecksetzen des Zaehlers nach der Aufforderung
+        if water_count >= 10:
+            print("Bitte Flasche fuellen!")
+            # Send message via Telegram
+            send_telegram_message("Bitte Flasche fuellen!")
+            water_count = 0  # Zuruecksetzen des Zaehlers nach der Aufforderung
 
-            # Wartezeit, bevor die Schleife wiederholt wird
-            time.sleep(10)
+        # Wartezeit, bevor die Schleife wiederholt wird
+        time.sleep(10)
 
-    except KeyboardInterrupt:
-        spi.close()
-        GPIO.cleanup()  # Setzt alle Pins zurueck
+except KeyboardInterrupt:
+    spi.close()
+    GPIO.cleanup()  # Setzt alle Pins zurueck
