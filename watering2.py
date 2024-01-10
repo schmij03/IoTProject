@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-import logging
 import spidev
 import time
 import RPi.GPIO as GPIO
@@ -8,29 +7,37 @@ from pymongo import MongoClient, server_api
 import requests
 from telegram import Update
 from telegram.ext import Updater, CommandHandler, MessageHandler, CallbackContext
+import logging
 
 # GPIO setup
 pump_pin = 23  # GPIO Nummer auf dem Raspberry PI.
-GPIO.setmode(GPIO.BCM)  # oder GPIO.BOARD fuer physische Pin-Nummerierung
+GPIO.setmode(GPIO.BCM)  # oder GPIO.BOARD für physische Pin-Nummerierung
 GPIO.setup(pump_pin, GPIO.OUT)
 
 # Counter for "Water your plant!"
 water_count = 0
 
+# MongoDB URIs
 uri = "mongodb+srv://janosi:1234@cluster.lp4msmq.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"
+uri2 ="mongodb+srv://janosi:1234@cluster0.4hmu3ww.mongodb.net/?retryWrites=true&w=majority"
 
-# Create a new client and connect to the server
+# Create new clients and connect to the server
 client = MongoClient(uri, server_api=server_api.ServerApi('1'))
+client1= MongoClient(uri2, server_api=server_api.ServerApi('1'))
 
 # Attempt to connect and confirm connection
 try:
     client.admin.command('ping')
-    print("Pinged your deployment. You successfully connected to MongoDB!")
+    client1.admin.command('ping')
+    print("Successfully connected to MongoDB!")
 except Exception as e:
     print("Failed to connect to MongoDB:", e)
 
+# Database and Collection setup
 db = client["IoT"]
+db1 = client1["Project 0"]
 collection = db["Cluster"]
+collection1 = db1["Cluster"]
 
 # Open SPI bus
 spi = spidev.SpiDev()
@@ -47,7 +54,7 @@ def ReadChannel(channel):
 sensor_channel = 0
 
 # Define the threshold below which "water your plant" is printed
-threshold = 500
+threshold = 550
 
 # Telegram configuration
 telegram_bot_token = '6611630847:AAEyTRdb8zn_G2cHA33covbTtZ7luOE6JoA'
@@ -63,17 +70,7 @@ def send_telegram_message(message):
     response = requests.get(send_text)
     return response.json()
 
-# Command handler functions
-def start(update: Update, context: CallbackContext) -> None:
-    update.message.reply_text('Hallo! Ich werde dich informieren, wenn ich die Pflanze giesse.')
-
-def giessen_command(update: Update, context: CallbackContext) -> None:
-    """Manuelles Giessen ueber den Telegram-Befehl"""
-    update.message.reply_text('Pflanze wird gegossen!')
-    giesse_pflanze()
-    
-
-def giesse_pflanze():
+def giesse_pflanze(update: Update, context: CallbackContext):
     """Aktiviert die Pumpe fuer eine festgelegte Zeit"""
     print('Pflanze wird gegossen!')
     GPIO.output(pump_pin, GPIO.HIGH)  # Schaltet die Pumpe ein
@@ -87,48 +84,39 @@ def message_received(update: Update, context: CallbackContext) -> None:
     # Extract the text of the received message
     message_text = update.message.text
 
-    
     if "giessen" in message_text:
-        giesse_pflanze()
-        
-# Erstellt den Updater und uebergibt ihn Ihr Bot-Token.
-updater = Updater(telegram_bot_token)
+        giesse_pflanze(update, context)
 
-# Erhalten den Dispatcher, um handlers zu registrieren
-dp = updater.dispatcher
-
-# Verschiedene command handlers
-dp.add_handler(CommandHandler("start", start))
-dp.add_handler(CommandHandler("giessen", giessen_command))  # Fuegt einen Handler fuer /giessen hinzu
-
-# Startet den Bot
-updater.start_polling()
-
-# ueberwachen des Feuchtigkeitssensors und automatisches Gießen, wenn erforderlich
+# Main loop for monitoring moisture sensor and automatic watering
 try:
     while True:
-        # Feuchtigkeit lesen
+        # Read the moisture level
         moisture_level = ReadChannel(sensor_channel)
-        print(f"Aktuelles Feuchtigkeitsniveau: {moisture_level}")
-
-        # ueberpruefen, ob das Feuchtigkeitsniveau unter dem Schwellenwert liegt
-        if moisture_level > threshold:
-            print("Feuchtigkeit unter Schwellenwert, Pflanze wird automatisch gegossen.")
-            giesse_pflanze()
-
+        print(f"Moisture Level: {moisture_level}")
+        
         # Store the value in MongoDB
         post = {"moisture_level": moisture_level, "timestamp": time.time()}
         post_id = collection.insert_one(post).inserted_id
+        
+        # Check if moisture level is below threshold
+        if moisture_level > threshold:
+            print("Water your plant!")
+            send_telegram_message("Ihre Pflanze wurde gegossen.")
+            giesse_pflanze(None, None)  # Note: Update and Context are not used in this function
+            water_count += 1
+
+            # Store the water event in MongoDB
+            post1 = {"timestamp": time.time()}
+            post_id1 = collection1.insert_one(post1).inserted_id
 
         if water_count >= 10:
             print("Bitte Flasche fuellen!")
-            # Send message via Telegram
             send_telegram_message("Bitte Flasche fuellen!")
-            water_count = 0  # Zuruecksetzen des Zaehlers nach der Aufforderung
+            water_count = 0  # Reset counter after prompt
 
-        # Wartezeit, bevor die Schleife wiederholt wird
         time.sleep(10)
 
 except KeyboardInterrupt:
     spi.close()
-    GPIO.cleanup()  # Setzt alle Pins zurueck
+    GPIO.cleanup()  # Clean up all GPIO
+
