@@ -1,5 +1,4 @@
-# -*- coding: utf-8 -*-
-
+# Import necessary libraries
 import spidev
 import time
 import RPi.GPIO as GPIO
@@ -7,23 +6,23 @@ from pymongo import MongoClient, server_api
 import requests
 import logging
 
-# GPIO setup
-pump_pin = 23  # GPIO Nummer auf dem Raspberry PI.
-GPIO.setmode(GPIO.BCM)  # oder GPIO.BOARD für physische Pin-Nummerierung
+# Set up GPIO pin for the water pump
+pump_pin = 23  
+GPIO.setmode(GPIO.BCM)  
 GPIO.setup(pump_pin, GPIO.OUT)
 
-# Counter for "Water your plant!"
+# Initialize a variable to keep track of water count
 water_count = 0
 
-# MongoDB URIs
+# MongoDB URIs for two databases
 uri = "mongodb+srv://janosi:1234@cluster.lp4msmq.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"
 uri2 ="mongodb+srv://janosi:1234@cluster0.4hmu3ww.mongodb.net/?retryWrites=true&w=majority"
 
-# Create new clients and connect to the server
+# Create MongoClient instances for the two databases
 client = MongoClient(uri, server_api=server_api.ServerApi('1'))
 client1= MongoClient(uri2, server_api=server_api.ServerApi('1'))
 
-# Attempt to connect and confirm connection
+# Check if MongoDB connections are successful
 try:
     client.admin.command('ping')
     client1.admin.command('ping')
@@ -31,82 +30,86 @@ try:
 except Exception as e:
     print("Failed to connect to MongoDB:", e)
 
-# Database and Collection setup
+# Select the specific databases and collections
 db = client["IoT"]
 db1 = client1["IoT2"]
 collection = db["Cluster"]
 collection1 = db1["Cluster0"]
 
-# Open SPI bus
+# Set up SPI for analog sensor communication
 spi = spidev.SpiDev()
 spi.open(0, 0)
 spi.max_speed_hz = 1000000
 
-# Function to read SPI data from MCP3008 chip
+# Function to read data from an analog sensor channel
 def ReadChannel(channel):
     adc = spi.xfer2([1, (8 + channel) << 4, 0])
     data = ((adc[1] & 3) << 8) + adc[2]
     return data
 
-# Define sensor channel (e.g. 0)
+# Analog sensor channel to read from
 sensor_channel = 0
 
-# Define the threshold below which "water your plant" is printed
+# Moisture level threshold for watering
 threshold = 600
 
-# Telegram configuration
-telegram_bot_token = '6611630847:AAEyTRdb8zn_G2cHA33covbTtZ7luOE6JoA'
-chat_id = '6432517199'
+# Telegram bot token and chat ID for sending notifications
+telegram_bot_token = 'YOUR_BOT_TOKEN_HERE'
+chat_id = 'YOUR_CHAT_ID_HERE'
 
-# Logging configuration (optional)
+# Configure logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+# Function to send a message via Telegram
 def send_telegram_message(message):
-    """Sendet eine Nachricht via Telegram Bot."""
     send_text = f'https://api.telegram.org/bot{telegram_bot_token}/sendMessage?chat_id={chat_id}&parse_mode=Markdown&text={message}'
     response = requests.get(send_text)
     return response.json()
 
+# Function to water the plant
 def giesse_pflanze():
-    """Aktiviert die Pumpe fuer eine festgelegte Zeit"""
     print('Pflanze wird gegossen!')
-    GPIO.output(pump_pin, GPIO.HIGH)  # Schaltet die Pumpe ein
-    time.sleep(5)  # Pumpe fuer 5 Sekunden laufen lassen
-    GPIO.output(pump_pin, GPIO.LOW)  # Schaltet die Pumpe aus
+    GPIO.output(pump_pin, GPIO.HIGH)  
+    time.sleep(5)  
+    GPIO.output(pump_pin, GPIO.LOW)  
     print('Giessen abgeschlossen!')
     update.message.reply_text('Pflanze wurde gegossen!')
 
-# Main loop for monitoring moisture sensor and automatic watering
+# Main loop to continuously monitor and water the plant
 try:
     while True:
-        # Read the moisture level
+        # Read moisture level from the analog sensor
         moisture_level = ReadChannel(sensor_channel)
         print(f"Moisture Level: {moisture_level}")
         
-        # Store the value in MongoDB
+        # Store the moisture level and timestamp in the MongoDB collection
         post = {"moisture_level": moisture_level, "timestamp": time.time()}
         post_id = collection.insert_one(post).inserted_id
         
-        # Check if moisture level is below threshold
+        # Check if moisture level is above the threshold
         if moisture_level > threshold:
             print("Water your plant!")
+            # Send a Telegram message
             send_telegram_message("Ihre Pflanze wurde gegossen.")
-            giesse_pflanze(None, None)  # Note: Update and Context are not used in this function
+            # Call the function to water the plant
+            giesse_pflanze(None, None)  
             water_count += 1
 
-            # Store the water event in MongoDB
+            # Store the timestamp of watering in the second MongoDB collection
             post1 = {"timestamp": time.time()}
             post_id1 = collection1.insert_one(post1).inserted_id
 
+        # Check if the water count has reached a limit
         if water_count >= 10:
             print("Bitte Flasche fuellen!")
             send_telegram_message("Bitte Flasche fuellen!")
-            water_count = 0  # Reset counter after prompt
+            water_count = 0  
 
+        # Wait for a set period before checking again (7200 seconds = 2 hours)
         time.sleep(7200)
 
 except KeyboardInterrupt:
+    # Close SPI and clean up GPIO pins on program exit
     spi.close()
-    GPIO.cleanup()  # Clean up all GPIO
-
+    GPIO.cleanup()
