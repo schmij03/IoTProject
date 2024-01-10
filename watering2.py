@@ -6,8 +6,8 @@ import time
 import RPi.GPIO as GPIO
 from pymongo import MongoClient, server_api
 import requests
-from telegram import Update
-from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext
+from telegram import Update, Filters
+from telegram.ext import Updater, CommandHandler, MessageHandler, CallbackContext
 
 # GPIO setup
 pump_pin = 23  # GPIO Nummer auf dem Raspberry PI.
