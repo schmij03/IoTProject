@@ -47,7 +47,7 @@ def ReadChannel(channel):
 sensor_channel = 0
 
 # Define the threshold below which "water your plant" is printed
-threshold = 200
+threshold = 500
 
 # Telegram configuration
 telegram_bot_token = '6611630847:AAEyTRdb8zn_G2cHA33covbTtZ7luOE6JoA'
@@ -71,7 +71,7 @@ def giessen_command(update: Update, context: CallbackContext) -> None:
     """Manuelles Giessen ueber den Telegram-Befehl"""
     update.message.reply_text('Pflanze wird gegossen!')
     giesse_pflanze()
-    update.message.reply_text('Giessen abgeschlossen!')
+    
 
 def giesse_pflanze():
     """Aktiviert die Pumpe fuer eine festgelegte Zeit"""
@@ -80,7 +80,17 @@ def giesse_pflanze():
     time.sleep(5)  # Pumpe fuer 5 Sekunden laufen lassen
     GPIO.output(pump_pin, GPIO.LOW)  # Schaltet die Pumpe aus
     print('Giessen abgeschlossen!')
+    update.message.reply_text('Pflanze wurde gegossen!')
 
+# Function to handle received messages
+def message_received(update: Update, context: CallbackContext) -> None:
+    # Extract the text of the received message
+    message_text = update.message.text
+
+    
+    if "giessen" in message_text:
+        giesse_pflanze()
+        
 # Erstellt den Updater und uebergibt ihn Ihr Bot-Token.
 updater = Updater(telegram_bot_token)
 
@@ -102,7 +112,7 @@ try:
         print(f"Aktuelles Feuchtigkeitsniveau: {moisture_level}")
 
         # ueberpruefen, ob das Feuchtigkeitsniveau unter dem Schwellenwert liegt
-        if moisture_level < threshold:
+        if moisture_level > threshold:
             print("Feuchtigkeit unter Schwellenwert, Pflanze wird automatisch gegossen.")
             giesse_pflanze()
 
