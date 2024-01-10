@@ -11,7 +11,7 @@ from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, Callb
 
 # GPIO setup
 pump_pin = 23  # GPIO Nummer auf dem Raspberry PI.
-GPIO.setmode(GPIO.BCM)  # oder GPIO.BOARD für physische Pin-Nummerierung
+GPIO.setmode(GPIO.BCM)  # oder GPIO.BOARD fuer physische Pin-Nummerierung
 GPIO.setup(pump_pin, GPIO.OUT)
 
 # Counter for "Water your plant!"
@@ -68,16 +68,16 @@ def start(update: Update, context: CallbackContext) -> None:
     update.message.reply_text('Hallo! Ich werde dich informieren, wenn ich die Pflanze giesse.')
 
 def giessen_command(update: Update, context: CallbackContext) -> None:
-    """Manuelles Giessen über den Telegram-Befehl"""
+    """Manuelles Giessen ueber den Telegram-Befehl"""
     update.message.reply_text('Pflanze wird gegossen!')
     giesse_pflanze()
     update.message.reply_text('Giessen abgeschlossen!')
 
 def giesse_pflanze():
-    """Aktiviert die Pumpe für eine festgelegte Zeit"""
+    """Aktiviert die Pumpe fuer eine festgelegte Zeit"""
     print('Pflanze wird gegossen!')
     GPIO.output(pump_pin, GPIO.HIGH)  # Schaltet die Pumpe ein
-    time.sleep(5)  # Pumpe für 5 Sekunden laufen lassen
+    time.sleep(5)  # Pumpe fuer 5 Sekunden laufen lassen
     GPIO.output(pump_pin, GPIO.LOW)  # Schaltet die Pumpe aus
     print('Giessen abgeschlossen!')
 
@@ -90,20 +90,20 @@ def main() -> None:
 
     # Verschiedene command handlers
     dp.add_handler(CommandHandler("start", start))
-    dp.add_handler(CommandHandler("giessen", giessen_command))  # Fügt einen Handler für /giessen hinzu
+    dp.add_handler(CommandHandler("giessen", giessen_command))  # Fuegt einen Handler fuer /giessen hinzu
     dp.add_handler(MessageHandler(Filters.text & ~Filters.command, giessen_command))  # Reagiert auf Nachrichten
 
     # Startet den Bot
     updater.start_polling()
 
-    # Überwachen des Feuchtigkeitssensors und automatisches Gießen, wenn erforderlich
+    # ueberwachen des Feuchtigkeitssensors und automatisches Gießen, wenn erforderlich
     try:
         while True:
             # Feuchtigkeit lesen
             moisture_level = ReadChannel(sensor_channel)
             print(f"Aktuelles Feuchtigkeitsniveau: {moisture_level}")
 
-            # Überprüfen, ob das Feuchtigkeitsniveau unter dem Schwellenwert liegt
+            # ueberpruefen, ob das Feuchtigkeitsniveau unter dem Schwellenwert liegt
             if moisture_level < threshold:
                 print("Feuchtigkeit unter Schwellenwert, Pflanze wird automatisch gegossen.")
                 giesse_pflanze()
@@ -123,7 +123,7 @@ def main() -> None:
 
     except KeyboardInterrupt:
         spi.close()
-        GPIO.cleanup()  # Setzt alle Pins zurück
+        GPIO.cleanup()  # Setzt alle Pins zurueck
 
 if __name__ == '__main__':
     main()
