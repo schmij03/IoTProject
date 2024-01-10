@@ -69,7 +69,7 @@ try:
         post_id = collection.insert_one(post).inserted_id
         
         # Check if moisture level is below threshold
-        if moisture_level < threshold:
+        if moisture_level > threshold:
             print("Water your plant!")
             # Send message via Telegram
             send_telegram_message("Ihre Pflanze wurde gegossen.")
