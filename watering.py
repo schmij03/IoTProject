@@ -15,19 +15,23 @@ GPIO.setup(pump_pin, GPIO.OUT)
 water_count = 0
 
 uri = "mongodb+srv://janosi:1234@cluster.lp4msmq.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"
+uri2 ="mongodb+srv://janosi:1234@cluster0.4hmu3ww.mongodb.net/?retryWrites=true&w=majority"
 
 # Create a new client and connect to the server
 client = MongoClient(uri, server_api=server_api.ServerApi('1'))
-
+client1= MongoClient(ur2, server_api=server_api.ServerApi('1'))
 # Attempt to connect and confirm connection
 try:
     client.admin.command('ping')
+    client1.admin.commmand('ping')
     print("Pinged your deployment. You successfully connected to MongoDB!")
 except Exception as e:
     print("Failed to connect to MongoDB:", e)
 
 db = client["IoT"]
+db1 = client["Project 0"]
 collection = db["Cluster"]
+collection1 =db["Cluster"]
 
 # Open SPI bus
 spi = spidev.SpiDev()
@@ -73,6 +77,9 @@ try:
             print("Water your plant!")
             # Send message via Telegram
             send_telegram_message("Ihre Pflanze wurde gegossen.")
+            # Store the value in MongoDB
+            post1 = {"timestamp": time.time()}
+            post_id1 = collection1.insert_one(post1).inserted_id
             water_count += 1
             GPIO.output(pump_pin, GPIO.HIGH)  # Schaltet die Pumpe ein
             
