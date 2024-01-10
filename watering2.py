@@ -6,7 +6,7 @@ import time
 import RPi.GPIO as GPIO
 from pymongo import MongoClient, server_api
 import requests
-from telegram import Update, Filters
+from telegram import Update
 from telegram.ext import Updater, CommandHandler, MessageHandler, CallbackContext
 
 # GPIO setup
@@ -91,7 +91,6 @@ def main() -> None:
     # Verschiedene command handlers
     dp.add_handler(CommandHandler("start", start))
     dp.add_handler(CommandHandler("giessen", giessen_command))  # Fuegt einen Handler fuer /giessen hinzu
-    dp.add_handler(MessageHandler(Filters.text & ~Filters.command, giessen_command))  # Reagiert auf Nachrichten
 
     # Startet den Bot
     updater.start_polling()
