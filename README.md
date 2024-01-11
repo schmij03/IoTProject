@@ -64,3 +64,6 @@ python3 plantpidrizzle_script.py
 - Anpassbarer Feuchtigkeitsschwellenwert für unterschiedliche Pflanzentypen.
 
 Mit PlantPiDrizzle erhalten Sie eine smarte, zuverlässige und benutzerfreundliche Lösung für die automatisierte Pflanzenpflege, die Ihren Alltag erleichtert und Ihre Pflanzen glücklich macht.
+
+## Hinweis
+Hier geht es noch zum dazugehörigen Dashboard, worüber die letze Bewässerung und der Feuchtigkeitsstand eingesehen werden kann: https://github.com/noahstammm/IoT_PlantPiDrizzle
