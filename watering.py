@@ -16,25 +16,22 @@ water_count = 0
 
 # MongoDB URIs for two databases
 uri = "mongodb+srv://janosi:1234@cluster.lp4msmq.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"
-uri2 ="mongodb+srv://janosi:1234@cluster0.4hmu3ww.mongodb.net/?retryWrites=true&w=majority"
 
 # Create MongoClient instances for the two databases
 client = MongoClient(uri, server_api=server_api.ServerApi('1'))
-client1= MongoClient(uri2, server_api=server_api.ServerApi('1'))
+
 
 # Check if MongoDB connections are successful
 try:
     client.admin.command('ping')
-    client1.admin.command('ping')
     print("Successfully connected to MongoDB!")
 except Exception as e:
     print("Failed to connect to MongoDB:", e)
 
 # Select the specific databases and collections
 db = client["IoT"]
-db1 = client1["IoT2"]
 collection = db["Cluster"]
-collection1 = db1["Cluster0"]
+collection1 = db1["message"]
 
 # Set up SPI for analog sensor communication
 spi = spidev.SpiDev()
@@ -53,9 +50,9 @@ sensor_channel = 0
 # Moisture level threshold for watering
 threshold = 600
 
-# Telegram bot token and chat ID for sending notifications
-telegram_bot_token = 'YOUR_BOT_TOKEN_HERE'
-chat_id = 'YOUR_CHAT_ID_HERE'
+# Telegram configuration
+telegram_bot_token = '6611630847:AAEyTRdb8zn_G2cHA33covbTtZ7luOE6JoA'
+chat_id = '6432517199'
 
 # Configure logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
