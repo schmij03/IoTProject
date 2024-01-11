@@ -73,7 +73,8 @@ def giesse_pflanze():
     GPIO.output(pump_pin, GPIO.LOW)  
     print('Giessen abgeschlossen!')
     if moisture_level > threshold:
-        text1 =f"Hallo, Deine Pflanze hatte einen Feuchtigskeitslevel von: {moisture_level}. Deine Pflanze wurde aus diesem Grund soeben gegossen."
+        moisture_percentage1 = (moisture_level / 1023) * 100 
+        text1 =f"Hallo, Deine Pflanze hatte einen Feuchtigskeitslevel in % von: {moisture_percentage1:.2f}%. Deine Pflanze wurde aus diesem Grund soeben gegossen."
         send_telegram_message(text1)
     
     send_telegram_message('Pflanze wurde gegossen!')
@@ -88,7 +89,9 @@ try:
         # Store the moisture level and timestamp in the MongoDB collection
         post = {"moisture_level": moisture_level, "timestamp": time.time()}
         post_id = collection.insert_one(post).inserted_id
-        text=f"Aktueller Feuchtigkeitswert: {moisture_level}"
+        
+        moisture_percentage = (moisture_level / 1023) * 100 
+        text = f"Aktueller Feuchtigkeitswert in %: {moisture_percentage:.2f}%"
         send_telegram_message("Hallo PlantPiDrizzle wurde soeben gestartet. ")
         send_telegram_message(text)
         # Check if moisture level is above the threshold
