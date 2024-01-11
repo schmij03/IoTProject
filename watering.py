@@ -78,9 +78,10 @@ def giesse_pflanze():
         send_telegram_message(text1)
     else:
         send_telegram_message('Pflanze wurde gegossen!')
- send_telegram_message("Hallo PlantPiDrizzle wurde soeben gestartet. ")
+ 
 # Main loop to continuously monitor and water the plant
 try:
+    send_telegram_message("Hallo PlantPiDrizzle wurde soeben gestartet. ")
     while True:
         # Read moisture level from the analog sensor
         moisture_level = ReadChannel(sensor_channel)
