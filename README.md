@@ -13,10 +13,31 @@ Das Hauptziel von PlantPiDrizzle ist es, eine zuverlässige und benutzerfreundli
 - Telegram-Bot-Token und Chat-ID
 - Bibliotheken: Spidev, RPi.GPIO, Pymongo, Requests, Logging
 
-## Installation
-Installieren Sie die notwendigen Bibliotheken mit dem folgenden Befehl:
+## Einrichtung einer virtuellen Umgebung (venv)
+Um Konflikte mit anderen Python-Projekten zu vermeiden, ist es empfehlenswert, PlantPiDrizzle in einer virtuellen Umgebung (venv) zu betreiben:
+
+1. **Virtuelle Umgebung erstellen:**
+   Navigieren Sie im Terminal zu Ihrem Projektverzeichnis und erstellen Sie eine neue virtuelle Umgebung mit:
+   ```bash
+   python3 -m venv plantpidrizzle_venv
+   ```
+
+2. **Virtuelle Umgebung aktivieren:**
+   Aktivieren Sie die virtuelle Umgebung mit:
+   ```bash
+   source plantpidrizzle_venv/bin/activate
+   ```
+
+3. **Installation der erforderlichen Pakete:**
+   Installieren Sie die benötigten Pakete innerhalb der virtuellen Umgebung:
+   ```bash
+   pip3 install spidev RPi.GPIO pymongo requests
+   ```
+
+### PlantPiDrizzle im venv ausführen
+Nachdem die virtuelle Umgebung eingerichtet und aktiviert ist, führen Sie das PlantPiDrizzle-Skript in dieser Umgebung aus:
 ```bash
-pip install spidev RPi.GPIO pymongo requests
+python3 plantpidrizzle_script.py
 ```
 
 ## Hardware-Setup
@@ -26,12 +47,6 @@ pip install spidev RPi.GPIO pymongo requests
 ## Konfiguration
 - Ersetzen Sie `YOUR_BOT_TOKEN_HERE` und `YOUR_CHAT_ID_HERE` im Skript durch Ihre Telegram-Bot-Token und Chat-ID.
 - Konfigurieren Sie die MongoDB URIs gemäß Ihren Zugangsdaten.
-
-## Anwendung ausführen
-Starten Sie das System durch Ausführen des Skripts mit Python 3:
-```bash
-python3 plantpidrizzle_script.py
-```
 
 ## Hauptfunktionen
 - Kontinuierliche Überwachung des Feuchtigkeitsgehalts.
