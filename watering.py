@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # Import necessary libraries
 import spidev
 import time
