@@ -73,7 +73,7 @@ def giesse_pflanze():
     GPIO.output(pump_pin, GPIO.LOW)  
     print('Giessen abgeschlossen!')
     if moisture_level > threshold:
-        text1 ="Hallo\nDeine Pflanze hatte einen Feuchtigskeitslevel von:",moisture_level,"\nDeine Pflanze wurde aus diesem Grund soeben gegossen."
+        text1 =f"Hallo, Deine Pflanze hatte einen Feuchtigskeitslevel von: {moisture_level}. Deine Pflanze wurde aus diesem Grund soeben gegossen."
         send_telegram_message(text1)
     
     send_telegram_message('Pflanze wurde gegossen!')
