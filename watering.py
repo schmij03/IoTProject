@@ -88,7 +88,7 @@ try:
         # Store the moisture level and timestamp in the MongoDB collection
         post = {"moisture_level": moisture_level, "timestamp": time.time()}
         post_id = collection.insert_one(post).inserted_id
-        text=str("Aktueller Feuchtigkeitswert: ",moisture_level)
+        text=f"Aktueller Feuchtigkeitswert: {moisture_level}"
         send_telegram_message("Hallo PlantPiDrizzle wurde soeben gestartet. ")
         send_telegram_message(text)
         # Check if moisture level is above the threshold
