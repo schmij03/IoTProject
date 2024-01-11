@@ -31,7 +31,7 @@ except Exception as e:
 # Select the specific databases and collections
 db = client["IoT"]
 collection = db["Cluster"]
-collection1 = db1["message"]
+collection1 = db["message"]
 
 # Set up SPI for analog sensor communication
 spi = spidev.SpiDev()
