@@ -74,7 +74,7 @@ def giesse_pflanze():
     print('Giessen abgeschlossen!')
     if moisture_level > threshold:
         moisture_percentage1 = 100-(moisture_level / 1023) * 100 
-        text1 =f"Hallo, Deine Pflanze hatte einen Feuchtigskeitslevel in % von: {moisture_percentage1:.2f}%. Deine Pflanze wurde aus diesem Grund soeben gegossen."
+        text1 =f"Hallo, Deine Pflanze hatte einen Feuchtigskeitslevel von: {moisture_percentage1:.2f}%. Deine Pflanze wurde aus diesem Grund soeben gegossen."
         send_telegram_message(text1)
     else:
         send_telegram_message('Pflanze wurde gegossen!')
@@ -91,7 +91,7 @@ try:
         post_id = collection.insert_one(post).inserted_id
         
         moisture_percentage = 100-(moisture_level / 1023) * 100 
-        text = f"Aktueller Feuchtigkeitswert in %: {moisture_percentage:.2f}%"
+        text = f"Aktueller Feuchtigkeitswert: {moisture_percentage:.2f}%"
         send_telegram_message("Hallo PlantPiDrizzle wurde soeben gestartet. ")
         send_telegram_message(text)
         # Check if moisture level is above the threshold
