@@ -76,8 +76,8 @@ def giesse_pflanze():
         moisture_percentage1 = (moisture_level / 1023) * 100 
         text1 =f"Hallo, Deine Pflanze hatte einen Feuchtigskeitslevel in % von: {moisture_percentage1:.2f}%. Deine Pflanze wurde aus diesem Grund soeben gegossen."
         send_telegram_message(text1)
-    
-    send_telegram_message('Pflanze wurde gegossen!')
+    else:
+        send_telegram_message('Pflanze wurde gegossen!')
 
 # Main loop to continuously monitor and water the plant
 try:
