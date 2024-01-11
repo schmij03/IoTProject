@@ -78,7 +78,7 @@ def giesse_pflanze():
         send_telegram_message(text1)
     else:
         send_telegram_message('Pflanze wurde gegossen!')
-
+ send_telegram_message("Hallo PlantPiDrizzle wurde soeben gestartet. ")
 # Main loop to continuously monitor and water the plant
 try:
     while True:
@@ -92,7 +92,6 @@ try:
         
         moisture_percentage = 100-(moisture_level / 1023) * 100 
         text = f"Aktueller Feuchtigkeitswert: {moisture_percentage:.2f}%"
-        send_telegram_message("Hallo PlantPiDrizzle wurde soeben gestartet. ")
         send_telegram_message(text)
         # Check if moisture level is above the threshold
         if moisture_level > threshold:
