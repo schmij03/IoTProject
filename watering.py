@@ -71,7 +71,10 @@ def giesse_pflanze():
     time.sleep(5)  
     GPIO.output(pump_pin, GPIO.LOW)  
     print('Giessen abgeschlossen!')
-    update.message.reply_text('Pflanze wurde gegossen!')
+    if moisture_level > threshold:
+        send_telegram_message("Hallo\nDeine Pflanze hatte einen Feuchtigskeitslevel von:",moisture_level,"\nDeine Pflanze wurde aus diesem Grund soeben gegossen.")
+    
+    send_telegram_message('Pflanze wurde gegossen!')
 
 # Main loop to continuously monitor and water the plant
 try:
@@ -87,10 +90,9 @@ try:
         # Check if moisture level is above the threshold
         if moisture_level > threshold:
             print("Water your plant!")
-            # Send a Telegram message
-            send_telegram_message("Ihre Pflanze wurde gegossen.")
+           
             # Call the function to water the plant
-            giesse_pflanze(None, None)  
+            giesse_pflanze()  
             water_count += 1
 
             # Store the timestamp of watering in the second MongoDB collection
