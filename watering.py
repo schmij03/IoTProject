@@ -95,9 +95,7 @@ try:
         text = f"Aktueller Feuchtigkeitswert: {moisture_percentage:.2f}%"
         send_telegram_message(text)
         # Check if moisture level is above the threshold
-        if moisture_level > threshold:
-            print("Water your plant!")
-           
+        if moisture_level > threshold:         
             # Call the function to water the plant
             giesse_pflanze()  
             water_count += 1
